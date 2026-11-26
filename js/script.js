@@ -116,9 +116,38 @@
     return `<div class="flow"><p class="flow__text"><span class="flow__no" aria-hidden="true">${k + 1}</span><span>${f.text}</span></p>${f.figure ? figure(f.figure) : ""}${(f.figures || []).map(figure).join("")}${prompts}</div>`;
   }
 
-  function step(s, i) {
-    const id = "step" + (i + 1);
+  function stepBody(s, id) {
     const body = (s.paragraphs || []).map((p) => `<p>${p}</p>`).join("");
+    return `
+          ${body}
+          ${list(s.list, "check-list")}
+          ${(s.flow || []).map((f, k) => flowItem(f, id, k)).join("")}
+          ${(s.figures || []).map(figure).join("")}
+          ${(s.prompts || []).map((p, k) => prompt(p, id + "-prompt" + k)).join("")}
+          ${s.point ? point(s.point) : ""}`;
+  }
+
+  // 展開式（CONTENT.stepsFold = true）: タイトルだけを見せ、タップで中身を開く
+  function foldStep(s, i) {
+    const id = "step" + (i + 1);
+    return `
+    <details class="step step--fold" id="${id}">
+      <summary class="step__summary">
+        <span class="step__no" aria-hidden="true"><span>STEP</span>${s.number}</span>
+        <span class="step__title step__title--fold"><span class="visually-hidden">STEP ${s.number}　</span>${s.title}</span>
+        <span class="step__chevron" aria-hidden="true"></span>
+      </summary>
+      <div class="container step__foldbody">
+        <p class="step__lead step__lead--in">${s.lead}</p>
+        <div class="step__body">${stepBody(s, id)}
+        </div>
+      </div>
+    </details>`;
+  }
+
+  function step(s, i) {
+    if (CONTENT.stepsFold) return foldStep(s, i);
+    const id = "step" + (i + 1);
     return `
     <section class="step" id="${id}" aria-labelledby="${id}-title">
       <div class="container">
@@ -129,13 +158,7 @@
             <p class="step__lead">${s.lead}</p>
           </div>
         </header>
-        <div class="step__body">
-          ${body}
-          ${list(s.list, "check-list")}
-          ${(s.flow || []).map((f, k) => flowItem(f, id, k)).join("")}
-          ${(s.figures || []).map(figure).join("")}
-          ${(s.prompts || []).map((p, k) => prompt(p, id + "-prompt" + k)).join("")}
-          ${s.point ? point(s.point) : ""}
+        <div class="step__body">${stepBody(s, id)}
         </div>
       </div>
     </section>`;
@@ -209,6 +232,7 @@
         const dest = document.querySelector(link.getAttribute("href"));
         if (dest) {
           e.preventDefault();
+          if (dest.tagName === "DETAILS") dest.open = true;
           dest.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
         }
       }

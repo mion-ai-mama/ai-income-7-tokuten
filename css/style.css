@@ -198,6 +198,24 @@ a:focus-visible, button:focus-visible {
 .figure img { border-radius: var(--radius-s); width: 100%; }
 .figure figcaption { margin-top: 10px; font-size: 14px; color: var(--c-muted); }
 
+/* STEPの展開式（タイトルだけ見せて、タップで開く） */
+.step--fold { padding: 0; border-top: 1px solid var(--c-line); }
+.step--fold:last-of-type { padding-bottom: 0; border-bottom: 1px solid var(--c-line); }
+.step__summary {
+  display: flex; align-items: center; gap: 14px; max-width: 760px; margin: 0 auto;
+  padding: 20px var(--gutter); cursor: pointer; list-style: none;
+}
+.step__summary::-webkit-details-marker { display: none; }
+.step__summary:focus-visible { outline: 2px solid var(--c-taupe); outline-offset: -2px; }
+.step__title--fold { flex: 1; margin: 0; font-size: 19px; }
+.step__chevron {
+  flex: none; width: 10px; height: 10px; margin-right: 4px;
+  border-right: 2px solid var(--c-taupe); border-bottom: 2px solid var(--c-taupe); transform: rotate(45deg); transition: transform .2s;
+}
+.step--fold[open] .step__chevron { transform: rotate(-135deg); }
+.step__foldbody { padding-bottom: var(--space-section); }
+.step__lead--in { padding-left: 0; margin-bottom: 20px; }
+
 /* ---------- コピペ用プロンプト ---------- */
 .prompt { padding: 20px; border: 1px solid var(--c-line); border-radius: var(--radius-m); background: #fff; }
 .prompt__label { margin-bottom: 10px; font-size: 14px; font-weight: 700; color: var(--c-ink); }
